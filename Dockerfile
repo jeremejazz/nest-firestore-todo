@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy package.json and install dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 # Copy source code
 COPY . .
@@ -24,13 +24,13 @@ WORKDIR /app
 
 # Copy production dependencies from the build stage
 COPY --from=build /app/package*.json ./
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
 
 # Copy the compiled application code
 COPY --from=build /app/dist ./dist
 
 # The default port for Cloud Run is 8080
-ENV PORT 8080
+ENV PORT=8080
 
 # Command to run the NestJS application
 CMD [ "node", "dist/main" ]
