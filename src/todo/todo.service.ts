@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { FIRESTORE_PROVIDER } from '../firestore/firestore.module';
@@ -16,8 +21,8 @@ export class TodoService {
   async create(createTodoDto: CreateTodoDto) {
     const todoPayload = {
       ...createTodoDto,
-      createdAt: FieldValue.serverTimestamp(), 
-      updatedAt: FieldValue.serverTimestamp(), 
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     };
     const newDoc = await this.firestore
       .collection(this.collectionName)
@@ -45,7 +50,7 @@ export class TodoService {
       .collection(this.collectionName)
       .doc(id)
       .get();
-    console.log(doc)
+    console.log(doc);
     if (!doc.exists) {
       throw new NotFoundException(`Todo with ID "${id}" not found`);
     }
@@ -53,17 +58,17 @@ export class TodoService {
   }
 
   async update(id: string, updateTodoDto: UpdateTodoDto): Promise<Todo> {
-
-if (Object.keys(updateTodoDto).length === 0) {
- 
-            throw new BadRequestException('Update payload cannot be empty. Specify at least one field to update.');
-        }
+    if (Object.keys(updateTodoDto).length === 0) {
+      throw new BadRequestException(
+        'Update payload cannot be empty. Specify at least one field to update.',
+      );
+    }
     const docRef = this.firestore.collection(this.collectionName).doc(id);
     await docRef.update(updateTodoDto);
 
     // Fetch and return the updated document
     const updatedDoc = await docRef.get();
-    const data = updatedDoc.data() as Todo
+    const data = updatedDoc.data() as Todo;
     return data;
   }
 
