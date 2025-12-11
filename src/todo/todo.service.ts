@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
@@ -63,6 +64,7 @@ export class TodoService {
         'Update payload cannot be empty. Specify at least one field to update.',
       );
     }
+    try{
     const docRef = this.firestore.collection(this.collectionName).doc(id);
     await docRef.update(updateTodoDto);
 
@@ -70,6 +72,12 @@ export class TodoService {
     const updatedDoc = await docRef.get();
     const data = updatedDoc.data() as Todo;
     return data;
+    }catch(error){
+      Logger.error("An Error has occured in update() " + error.message)
+      Logger.debug(error.stack);
+      throw new BadRequestException()
+
+    }
   }
 
   async remove(id: string) {
